@@ -79,15 +79,75 @@ class ShiftSchedulerApp(tk.Tk):
             messagebox.showerror('エラー', f'ファイルを読み込めませんでした: {e}')
 
     def assign_shifts(self):
-        # ここでシフト割り当てのロジックを実装する
-        # 今はダミーデータを生成
-        self.shift_schedule = pd.DataFrame({
-            'Name': ['田中', '鈴木', '佐藤'],
-            '1日': ['早番', '遅番', '休み'],
-            '2日': ['遅番', '休み', '早番'],
-            # ...他の日付も同様に...
-        })
-        self.show_schedule()
+        # プレビューからデータを取得
+        try:
+            # ツリービューの内容をDataFrameに変換
+            columns = self.preview_tree['columns']
+            data = []
+            for item in self.preview_tree.get_children():
+                data.append(self.preview_tree.item(item, 'values'))
+            shift_preferences_df = pd.DataFrame(data, columns=columns)
+            
+            # シフトスケジュールを計算
+            self.shift_schedule = self.calculate_shift_schedule(shift_preferences_df)
+            
+            # シフトスケジュールを表示
+            if self.shift_schedule is not None:
+                self.show_schedule()
+        except Exception as e:
+            messagebox.showerror('エラー', f'シフト割り当てに失敗しました: {e}')
+    
+    def calculate_shift_schedule(self, shift_preferences_df):
+        # CSVから読み込んだデータは文字列として扱われるので、適切な形式に変換する
+        shift_preferences_df = shift_preferences_df.applymap(str)
+
+        # 応募者名と日付カラムを取得
+        applicants = shift_preferences_df['名前'].tolist()
+        dates = shift_preferences_df.columns[2:]  # 最初の2カラムはタイムスタンプと名前
+
+        # 初期化
+        shift_schedule = {name: [] for name in applicants}
+        
+        # 各日付ごとにシフトを割り当てる
+        for date in dates:
+            # その日の希望を取得
+            daily_preferences = shift_preferences_df[['名前', date]].set_index('名前')
+            
+            # 早番、遅番、終日可能、休みの数をカウント
+            early_count = (daily_preferences[date] == '早番').sum()
+            late_count = (daily_preferences[date] == '遅番').sum()
+            all_day_count = (daily_preferences[date] == '終日可能').sum()
+            
+            # 希望者リストを作成
+            early_applicants = daily_preferences[daily_preferences[date] == '早番'].index.tolist()
+            late_applicants = daily_preferences[daily_preferences[date] == '遅番'].index.tolist()
+            all_day_applicants = daily_preferences[daily_preferences[date] == '終日可能'].index.tolist()
+            
+            # 早番と遅番を割り当てる
+            for _ in range(2):
+                if early_applicants:
+                    chosen_one = early_applicants.pop(0)
+                    shift_schedule[chosen_one].append('早番')
+                elif all_day_applicants:
+                    chosen_one = all_day_applicants.pop(0)
+                    shift_schedule[chosen_one].append('早番')
+                
+                if late_applicants:
+                    chosen_one = late_applicants.pop(0)
+                    shift_schedule[chosen_one].append('遅番')
+                elif all_day_applicants:
+                    chosen_one = all_day_applicants.pop(0)
+                    shift_schedule[chosen_one].append('遅番')
+            
+            # 未割り当ての人に休みを割り当てる
+            for name in applicants:
+                if len(shift_schedule[name]) < len(shift_schedule[applicants[0]]):
+                    shift_schedule[name].append('休み')
+
+        # データフレームに変換して返す
+        return pd.DataFrame.from_dict(shift_schedule, orient='index', columns=dates)
+
+
 
     def show_schedule(self):
         # シフトスケジュールを表示
