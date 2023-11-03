@@ -1,6 +1,8 @@
 import pandas as pd
 import random
 import os
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 
 # CSVファイルのパス
 file_path = './input/test.csv'
@@ -43,7 +45,6 @@ def assign_shifts_for_day(preferences, day):
         '遅番': assigned_late_shift,
         '休み': [name for name in preferences['名前'] if name not in assigned_early_shift + assigned_late_shift]
     }
-
     return shift_assignments
 
 # 全日にわたってシフトを割り当て、シフトスケジュールを作成する関数
@@ -58,8 +59,20 @@ def create_shift_schedule(preferences):
                 shift_schedule.loc[name, day] = shift_type
                 
         shift_schedule[day] = shift_schedule[day].fillna('休み')
-
     return shift_schedule
+
+# GUI用
+def select_file():
+    # ファイル選択ダイアログを開いてファイルパスを取得する関数
+    pass
+
+def display_shift_schedule():
+    # シフトスケジュールを生成して表示する関数
+    pass
+
+def export_shift_schedule():
+    # シフトスケジュールをCSVとしてエクスポートする関数
+    pass
 
 # シフトスケジュールを作成
 shift_schedule = create_shift_schedule(shift_preferences)
