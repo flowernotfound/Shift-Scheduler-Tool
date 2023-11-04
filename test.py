@@ -65,18 +65,28 @@ class ShiftSchedulerApp(tk.Tk):
 
     def assign_shifts(self):
         try:
+            # ツリービューからカラム名を取得
             columns = self.preview_tree['columns']
-            data = []
-            for item in self.preview_tree.get_children():
-                data.append(self.preview_tree.item(item, 'values'))
+            
+            # ツリービューの内容を取得
+            data = [self.preview_tree.item(item, 'values') for item in self.preview_tree.get_children()]
+            
+            # DataFrameを作成する際に、カラムの数が一致するか確認
+            if len(data[0]) != len(columns):
+                raise ValueError("カラムの数が一致しません。CSVファイルを確認してください。")
+            
+            # データをDataFrameに変換
             shift_preferences_df = pd.DataFrame(data, columns=columns)
             
+            # シフトスケジュールを計算
             self.shift_schedule = self.calculate_shift_schedule(shift_preferences_df)
             
+            # シフトスケジュールを表示
             if self.shift_schedule is not None:
                 self.show_schedule()
         except Exception as e:
             messagebox.showerror('エラー', f'シフト割り当てに失敗しました: {e}')
+
     
     def calculate_shift_schedule(self, shift_preferences_df):
         shift_preferences_df = shift_preferences_df.applymap(str)
