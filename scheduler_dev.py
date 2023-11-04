@@ -62,6 +62,13 @@ class ShiftSchedulerApp:
 
     def setup_ui(self):
         self.root.title("シフトスケジュール作成ツール")
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        width = 800
+        height = 600
+        x = (screen_width / 2) - (width / 2)
+        y = (screen_height / 2) - (height / 2)
+        self.root.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
         self.file_path_label = tk.Label(self.root, text="ファイルが選択されていません")
         self.file_path_label.pack()
 
