@@ -50,7 +50,14 @@ def create_shift_schedule(preferences):
 root = tk.Tk()
 root.title("シフトスケジュール作成ツール")
 
-# ファイルパスラベル（先にこれを定義します）
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+width = 800
+height = 600
+x = (screen_width / 2) - (width / 2)
+y = (screen_height / 2) - (height / 2)
+root.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
+
 file_path_label = tk.Label(root, text="ファイルが選択されていません")
 file_path_label.pack()
 
@@ -87,21 +94,13 @@ def save_results():
 def exit_application():
     root.destroy()
 
-# ファイル選択ボタン
 select_file_button = tk.Button(root, text="ファイルを選択", command=select_file)
 select_file_button.pack()
-
-# シフト割り当て開始ボタン
 start_button = tk.Button(root, text="シフト割り当て開始", command=start_shift_assignment)
 start_button.pack()
-
-# 結果を保存ボタン
 save_button = tk.Button(root, text="結果を保存", command=save_results)
 save_button.pack()
-
-# 終了ボタン
 exit_button = tk.Button(root, text="終了", command=exit_application)
 exit_button.pack()
 
-# イベントループ
 root.mainloop()
