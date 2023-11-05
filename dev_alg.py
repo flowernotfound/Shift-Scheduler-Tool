@@ -4,9 +4,6 @@ from tkinter import messagebox
 import pandas as pd
 import os
 import random
-from datetime import datetime
-from typing import List, Dict
-from collections import defaultdict
 
 class ShiftScheduler:
     def __init__(self):
@@ -48,12 +45,16 @@ class ShiftScheduler:
 
     def create_shift_schedule(self, preferences):
         shift_schedule = pd.DataFrame(index=preferences['名前'].unique())
+        shortage_list = []
         for day in [f'希望日 [{i}日]' for i in range(1, 32) if f'希望日 [{i}日]' in preferences.columns]:
             daily_shifts = self.assign_shifts_for_day(preferences, day)
+            if len(daily_shifts['早番']) < 2 or len(daily_shifts['遅番']) < 2:
+                shortage_list.append(day)
             for shift_type, names in daily_shifts.items():
                 for name in names:
                     shift_schedule.loc[name, day] = shift_type
             shift_schedule[day] = shift_schedule[day].fillna('休み')
+        shift_schedule.loc['不足'] = ['不足' if day in shortage_list else '' for day in shift_schedule.columns]
         self.shift_schedule = shift_schedule
 
 class ShiftSchedulerApp:
