@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import ttk
 import pandas as pd
 import os
 import random
@@ -66,27 +67,35 @@ class ShiftSchedulerApp:
 
     def setup_ui(self):
         self.root.title("シフトスケジュール作成ツール")
+        style = ttk.Style()
+        style.configure('TButton', font=('Helvetica', 12), padding=10)
+        style.configure('TLabel', font=('Helvetica', 12), padding=10)
+        self.file_path_label = ttk.Label(self.root, text="ファイルが選択されていません")
+        self.file_path_label.grid(row=0, column=0, columnspan=2, pady=10, padx=10, sticky="w")
+        self.select_file_button = ttk.Button(self.root, text="ファイルを選択", command=self.select_file)
+        self.select_file_button.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
+        self.start_button = ttk.Button(self.root, text="シフト割り当て開始", command=self.start_shift_assignment)
+        self.start_button.grid(row=1, column=1, pady=10, padx=10, sticky="ew")
+        self.save_button = ttk.Button(self.root, text="結果を保存", command=self.save_results)
+        self.save_button.grid(row=2, column=0, pady=10, padx=10, sticky="ew")
+        self.exit_button = ttk.Button(self.root, text="終了", command=self.exit_application)
+        self.exit_button.grid(row=2, column=1, pady=10, padx=10, sticky="ew")
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.geometry('600x300')
+        self.center_window()
+
+    def center_window(self):
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-        width = 800
-        height = 600
-        x = (screen_width / 2) - (width / 2)
-        y = (screen_height / 2) - (height / 2)
-        self.root.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
-        self.file_path_label = tk.Label(self.root, text="ファイルが選択されていません")
-        self.file_path_label.pack()
-
-        self.select_file_button = tk.Button(self.root, text="ファイルを選択", command=self.select_file)
-        self.select_file_button.pack()
-
-        self.start_button = tk.Button(self.root, text="シフト割り当て開始", command=self.start_shift_assignment)
-        self.start_button.pack()
-
-        self.save_button = tk.Button(self.root, text="結果を保存", command=self.save_results)
-        self.save_button.pack()
-
-        self.exit_button = tk.Button(self.root, text="終了", command=self.exit_application)
-        self.exit_button.pack()
+        x = int((screen_width / 2) - (width / 2))
+        y = int((screen_height / 2) - (height / 2))
+        self.root.geometry(f'{width}x{height}+{x}+{y}')
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
