@@ -17,20 +17,20 @@ class ShiftScheduler:
         except Exception as e:
             raise Exception(f"ファイルの読み込みに失敗しました: {e}")
 
-    def assign_shifts_for_day(self, preferences, day):
+    def assign_shifts_for_day(self, preferences, day, early_shift_count, late_shift_count):
         early_shift_candidates = preferences[preferences[day] == '早番']['名前'].tolist()
         late_shift_candidates = preferences[preferences[day] == '遅番']['名前'].tolist()
         all_day_candidates = preferences[preferences[day] == '終日可能']['名前'].tolist()
         assigned_early_shift = random.sample(early_shift_candidates, min(2, len(early_shift_candidates)))
         assigned_late_shift = random.sample(late_shift_candidates, min(2, len(late_shift_candidates)))
-        while len(assigned_early_shift) < 2:
+        while len(assigned_early_shift) < early_shift_count:
             if all_day_candidates:
                 candidate = random.choice(all_day_candidates)
                 assigned_early_shift.append(candidate)
                 all_day_candidates.remove(candidate)
             else:
                 break
-        while len(assigned_late_shift) < 2:
+        while len(assigned_late_shift) < late_shift_count:
             if all_day_candidates:
                 candidate = random.choice(all_day_candidates)
                 assigned_late_shift.append(candidate)
@@ -44,12 +44,12 @@ class ShiftScheduler:
         }
         return shift_assignments
 
-    def create_shift_schedule(self, preferences):
+    def create_shift_schedule(self, preferences, early_shift_count, late_shift_count):
         shift_schedule = pd.DataFrame(index=preferences['名前'].unique())
         shortage_list = []
         for day in [f'希望日 [{i}日]' for i in range(1, 32) if f'希望日 [{i}日]' in preferences.columns]:
-            daily_shifts = self.assign_shifts_for_day(preferences, day)
-            if len(daily_shifts['早番']) < 2 or len(daily_shifts['遅番']) < 2:
+            daily_shifts = self.assign_shifts_for_day(preferences, day, early_shift_count, late_shift_count)
+            if len(daily_shifts['早番']) < early_shift_count or len(daily_shifts['遅番']) < late_shift_count:
                 shortage_list.append(day)
             for shift_type, names in daily_shifts.items():
                 for name in names:
@@ -150,7 +150,7 @@ class ShiftSchedulerApp:
         
         try:
             preferences = self.scheduler.load_preferences(self.selected_file_path)
-            self.scheduler.create_shift_schedule(preferences)
+            self.scheduler.create_shift_schedule(preferences, early_shift_count, late_shift_count)
             messagebox.showinfo("完了", "シフト割り当てが完了しました。")
         except Exception as e:
             messagebox.showerror("エラー", f"ファイルの読み込みに失敗しました: {e}")
