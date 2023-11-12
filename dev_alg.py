@@ -21,8 +21,10 @@ class ShiftScheduler:
         early_shift_candidates = preferences[preferences[day] == '早番']['名前'].tolist()
         late_shift_candidates = preferences[preferences[day] == '遅番']['名前'].tolist()
         all_day_candidates = preferences[preferences[day] == '終日可能']['名前'].tolist()
-        assigned_early_shift = random.sample(early_shift_candidates, min(2, len(early_shift_candidates)))
-        assigned_late_shift = random.sample(late_shift_candidates, min(2, len(late_shift_candidates)))
+        
+        assigned_early_shift = random.sample(early_shift_candidates, min(early_shift_count, len(early_shift_candidates)))
+        assigned_late_shift = random.sample(late_shift_candidates, min(late_shift_count, len(late_shift_candidates)))
+        
         while len(assigned_early_shift) < early_shift_count:
             if all_day_candidates:
                 candidate = random.choice(all_day_candidates)
