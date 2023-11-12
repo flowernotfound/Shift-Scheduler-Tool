@@ -84,15 +84,23 @@ class ShiftSchedulerApp:
         self.file_path_label.grid(row=0, column=0, columnspan=2, pady=10, padx=10, sticky="w")
         self.select_file_button = ttk.Button(self.root, text="ファイルを選択", command=self.select_file)
         
-        # 早番の人数設定
+        # 早番の人数設定ラベル
+        early_shift_label = ttk.Label(self.root, text="早番の必要人数")
+        early_shift_label.grid(row=3, column=0, pady=10, padx=10, sticky="e")
+
+        # 早番の人数設定スピンボックス
         self.early_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
         self.early_shift_spinner.set(self.early_shift_count)
-        self.early_shift_spinner.grid(row=3, column=0, pady=10, padx=10, sticky="ew")
+        self.early_shift_spinner.grid(row=3, column=1, pady=10, padx=10, sticky="w")
 
-        # 遅番の人数設定
+        # 遅番の人数設定ラベル
+        late_shift_label = ttk.Label(self.root, text="遅番の必要人数")
+        late_shift_label.grid(row=4, column=0, pady=10, padx=10, sticky="e")
+
+        # 遅番の人数設定スピンボックス
         self.late_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
         self.late_shift_spinner.set(self.late_shift_count)
-        self.late_shift_spinner.grid(row=3, column=1, pady=10, padx=10, sticky="ew")
+        self.late_shift_spinner.grid(row=4, column=1, pady=10, padx=10, sticky="w")
         
         self.select_file_button.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
         self.start_button = ttk.Button(self.root, text="シフト割り当て開始", command=self.start_shift_assignment)
