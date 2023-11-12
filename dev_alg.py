@@ -63,7 +63,17 @@ class ShiftSchedulerApp:
         self.root = root
         self.scheduler = ShiftScheduler()
         self.selected_file_path = None
+        
+        self.early_shift_count = 2
+        self.late_shift_count = 2
+        
         self.setup_ui()
+
+    def is_valid_number(self, value):
+        try:
+            return int(value) >= 0
+        except ValueError:
+            return False
 
     def setup_ui(self):
         self.root.title("シフトスケジュール作成ツール")
@@ -73,6 +83,17 @@ class ShiftSchedulerApp:
         self.file_path_label = ttk.Label(self.root, text="ファイルが選択されていません")
         self.file_path_label.grid(row=0, column=0, columnspan=2, pady=10, padx=10, sticky="w")
         self.select_file_button = ttk.Button(self.root, text="ファイルを選択", command=self.select_file)
+        
+        # 早番の人数設定
+        self.early_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
+        self.early_shift_spinner.set(self.early_shift_count)
+        self.early_shift_spinner.grid(row=3, column=0, pady=10, padx=10, sticky="ew")
+
+        # 遅番の人数設定
+        self.late_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
+        self.late_shift_spinner.set(self.late_shift_count)
+        self.late_shift_spinner.grid(row=3, column=1, pady=10, padx=10, sticky="ew")
+        
         self.select_file_button.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
         self.start_button = ttk.Button(self.root, text="シフト割り当て開始", command=self.start_shift_assignment)
         self.start_button.grid(row=1, column=1, pady=10, padx=10, sticky="ew")
