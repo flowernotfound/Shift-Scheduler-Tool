@@ -47,9 +47,18 @@ class ShiftScheduler:
         return shift_assignments
 
     def create_shift_schedule(self, preferences, early_shift_count, late_shift_count):
+        new_columns = []
+        for col in preferences.columns:
+            if '希望日 [' in col:
+                new_col = col.replace('希望日 [', '').replace(']', '')
+                new_columns.append(new_col)
+            else:
+                new_columns.append(col)
+        preferences.columns = new_columns
+
         shift_schedule = pd.DataFrame(index=preferences['名前'].unique())
         shortage_list = []
-        for day in [f'希望日 [{i}日]' for i in range(1, 32) if f'希望日 [{i}日]' in preferences.columns]:
+        for day in [f'{i}日' for i in range(1, 32) if f'{i}日' in preferences.columns]:
             daily_shifts = self.assign_shifts_for_day(preferences, day, early_shift_count, late_shift_count)
             if len(daily_shifts['早番']) < early_shift_count or len(daily_shifts['遅番']) < late_shift_count:
                 shortage_list.append(day)
@@ -139,17 +148,13 @@ class ShiftSchedulerApp:
         if self.selected_file_path is None:
             messagebox.showwarning("警告", "ファイルが選択されていません。")
             return
-        
         early_shift_count = self.early_shift_spinner.get()
         late_shift_count = self.late_shift_spinner.get()
-        
         if not self.is_valid_number(early_shift_count) or not self.is_valid_number(late_shift_count):
             messagebox.showerror("エラー", "早番または遅番の人数に無効な値が設定されています。")
             return
-        
         early_shift_count = int(early_shift_count)
         late_shift_count = int(late_shift_count)
-        
         try:
             preferences = self.scheduler.load_preferences(self.selected_file_path)
             self.scheduler.create_shift_schedule(preferences, early_shift_count, late_shift_count)
