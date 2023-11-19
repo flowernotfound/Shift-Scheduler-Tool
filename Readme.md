@@ -61,7 +61,7 @@ This document outlines the specifications for the development of a Shift Schedul
 
 for jp
 
-# シフトスケジューラアプリ プロジェクト仕様
+# シフトスケジューラ
 
 ## 概要
 
