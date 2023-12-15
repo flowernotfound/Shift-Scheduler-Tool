@@ -116,32 +116,64 @@ class ShiftSchedulerApp:
         style = ttk.Style()
         style.configure('TButton', font=('Helvetica', 12), padding=10)
         style.configure('TLabel', font=('Helvetica', 12), padding=10)
+
+        # ファイルパスラベル
         self.file_path_label = ttk.Label(self.root, text="ファイルが選択されていません")
-        self.file_path_label.grid(row=0, column=0, columnspan=2, pady=10, padx=10, sticky="w")
+        self.file_path_label.grid(row=0, column=0, columnspan=3, pady=10, padx=10, sticky="w")
+
+        # ファイル選択ボタン
         self.select_file_button = ttk.Button(self.root, text="ファイルを選択", command=self.select_file)
+        self.select_file_button.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
+
+        # 早番の必要人数ラベルとスピンボックス
         early_shift_label = ttk.Label(self.root, text="早番の必要人数")
-        early_shift_label.grid(row=3, column=0, pady=10, padx=10, sticky="e")
+        early_shift_label.grid(row=2, column=0, pady=10, padx=10, sticky="e")
         self.early_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
         self.early_shift_spinner.set(self.early_shift_count)
-        self.early_shift_spinner.grid(row=3, column=1, pady=10, padx=10, sticky="w")
+        self.early_shift_spinner.grid(row=2, column=1, pady=10, padx=10, sticky="w")
+
+        # 遅番の必要人数ラベルとスピンボックス
         late_shift_label = ttk.Label(self.root, text="遅番の必要人数")
-        late_shift_label.grid(row=4, column=0, pady=10, padx=10, sticky="e")
+        late_shift_label.grid(row=3, column=0, pady=10, padx=10, sticky="e")
         self.late_shift_spinner = ttk.Spinbox(self.root, from_=0, to=10, increment=1, wrap=True)
         self.late_shift_spinner.set(self.late_shift_count)
-        self.late_shift_spinner.grid(row=4, column=1, pady=10, padx=10, sticky="w")
-        self.select_file_button.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
+        self.late_shift_spinner.grid(row=3, column=1, pady=10, padx=10, sticky="w")
+
+        # シフト割り当て開始ボタン
         self.start_button = ttk.Button(self.root, text="シフト割り当て開始", command=self.start_shift_assignment)
         self.start_button.grid(row=1, column=1, pady=10, padx=10, sticky="ew")
+
+        # 結果保存ボタン
         self.save_button = ttk.Button(self.root, text="結果を保存", command=self.save_results)
-        self.save_button.grid(row=2, column=0, pady=10, padx=10, sticky="ew")
+        self.save_button.grid(row=2, column=2, pady=10, padx=10, sticky="ew")
+
+        # 終了ボタン
         self.exit_button = ttk.Button(self.root, text="終了", command=self.exit_application)
-        self.exit_button.grid(row=2, column=1, pady=10, padx=10, sticky="ew")
+        self.exit_button.grid(row=3, column=2, pady=10, padx=10, sticky="ew")
+
+        # 年と月の入力フィールド
+        self.year_entry = ttk.Entry(self.root)
+        self.year_entry.grid(row=4, column=0, pady=10, padx=10, sticky="ew")
+        self.month_entry = ttk.Entry(self.root)
+        self.month_entry.grid(row=4, column=1, pady=10, padx=10, sticky="ew")
+
+        # 読み込みボタン
+        self.confirm_year_month_button = ttk.Button(self.root, text="この年月のシフト希望を読み込む", command=self.confirm_year_month)
+        self.confirm_year_month_button.grid(row=4, column=2, pady=10, padx=10, sticky="ew")
+
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_rowconfigure(2, weight=1)
+        self.root.grid_rowconfigure(3, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
         self.root.geometry('600x300')
         self.center_window()
+
+    def confirm_year_month(self):
+        # 年月の入力値を取得し、検証します
+        year = self.year_entry.get()
+        month = self.month_entry.get()
 
     def center_window(self):
         self.root.update_idletasks()
