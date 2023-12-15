@@ -5,10 +5,39 @@ from tkinter import ttk
 import pandas as pd
 import os
 import random
+import sqlite3
 
 class ShiftScheduler:
     def __init__(self):
         self.shift_schedule = None
+        self.db_connection = None
+        self.init_database()
+        
+    def init_database(self):
+        db_path = 'shift_scheduler.db'
+        self.db_connection = sqlite3.connect(db_path)
+        cursor = self.db_connection.cursor()
+        # 従業員テーブルの作成
+        cursor.execute('''CREATE TABLE IF NOT EXISTS employees (
+                            id INTEGER PRIMARY KEY,
+                            name TEXT,
+                            email TEXT
+                            )''')
+        # シフト希望テーブルの作成
+        cursor.execute('''CREATE TABLE IF NOT EXISTS shift_preferences (
+                            employee_id INTEGER,
+                            date TEXT,
+                            shift_type TEXT,
+                            FOREIGN KEY(employee_id) REFERENCES employees(id)
+                            )''')
+        # シフト割り当てテーブルの作成
+        cursor.execute('''CREATE TABLE IF NOT EXISTS shift_assignments (
+                            employee_id INTEGER,
+                            date TEXT,
+                            shift_type TEXT,
+                            FOREIGN KEY(employee_id) REFERENCES employees(id)
+                            )''')
+        self.db_connection.commit()
 
     def load_preferences(self, file_path):
         try:
